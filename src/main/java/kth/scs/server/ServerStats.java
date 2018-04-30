@@ -1,11 +1,7 @@
 package kth.scs.server;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
-
 import kth.scs.input.StreamItem;
 
 /**
@@ -48,6 +44,7 @@ public class ServerStats implements Serializable {
 		return value;
 	}
 	
+	@Override
 	public String toString() {
 		return inputQueue.size() + " " + finishedTasks+ " " + getAverageExecuteLatency() + " " + totalProcessed +" " + getResourceUtilization()+ " " +(inputQueue.size()+finishedTasks)+ "\t";
 	}

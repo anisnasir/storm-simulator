@@ -1,24 +1,15 @@
 package kth.scs.main;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Map.Entry;
-import java.util.zip.GZIPInputStream;
-
 import kth.scs.input.StreamItem;
 import kth.scs.input.StreamItemReader;
 import kth.scs.partitioner.ConsistentGroupingCH;
@@ -34,7 +25,6 @@ import kth.scs.partitioner.PartialKeyGrouping;
 import kth.scs.partitioner.PowerofTwoChoices;
 import kth.scs.partitioner.ShuffleGrouping;
 import kth.scs.server.Server;
-import kth.scs.server.ServerStats;
 import kth.scs.server.TimeGranularity;
 
 public class Main {
@@ -312,7 +302,7 @@ public class Main {
 
 			}
 			bw.newLine();
-			double average = averageTaskLoad/(double)numServers;
+			double average = averageTaskLoad/numServers;
 			bw.write("Max Task Load:" + maxTaskLoad+"\n");
 			bw.write("Min Task Load:" + minTaskLoad+"\n");
 			bw.write("Avg Task Load:" + average+"\n");

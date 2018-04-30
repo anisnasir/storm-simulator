@@ -3,14 +3,9 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-
-import org.apache.commons.math3.distribution.ZipfDistribution;
 import org.junit.Test;
 
 import kth.scs.input.StreamItem;
-import kth.scs.partitioner.ConsistentGroupingKG;
-import kth.scs.partitioner.ConsistentGroupingPKG;
 import kth.scs.partitioner.ConsistentGroupingPoTC;
 import kth.scs.server.Server;
 import kth.scs.server.TimeGranularity;

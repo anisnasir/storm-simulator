@@ -1,7 +1,6 @@
 package kth.scs.partitioner;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -59,6 +58,7 @@ public class ConsistentHashing implements LoadBalancer{
 		}
 	}
 
+	@Override
 	public Server getServer(long timestamp, StreamItem item) {
 		Object key = item.getTaskID();
 		if (circle.isEmpty()) {

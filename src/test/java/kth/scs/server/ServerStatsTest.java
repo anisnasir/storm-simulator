@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedList;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
 import kth.scs.input.StreamItem;

@@ -1,8 +1,5 @@
 package kth.scs.partitioner;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -26,6 +23,7 @@ public class ShuffleGrouping implements LoadBalancer{
 		}
 		
 	}
+	@Override
 	public Server getServer(long timestamp, StreamItem item) {
 		Server server = circle.get(currentServer);
 		currentServer++;

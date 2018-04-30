@@ -7,12 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.commons.math3.distribution.ZipfDistribution;
 
 /**
  * Reads a stream of StreamItems from a file.

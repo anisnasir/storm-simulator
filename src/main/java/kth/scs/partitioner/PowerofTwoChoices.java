@@ -3,9 +3,6 @@ package kth.scs.partitioner;
 import java.util.List;
 import java.util.Random;
 
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-
 import kth.scs.input.StreamItem;
 import kth.scs.server.Server;
 
@@ -27,6 +24,7 @@ public class PowerofTwoChoices implements LoadBalancer {
 		this.sourceCount = 0;
 	}
 
+	@Override
 	public Server getServer(long timestamp, StreamItem item) {
 		int source = (this.sourceCount++) % this.numSources;
 		this.sourceCount %= this.numSources;

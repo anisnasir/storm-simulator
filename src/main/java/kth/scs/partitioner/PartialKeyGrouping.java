@@ -27,6 +27,7 @@ public class PartialKeyGrouping implements LoadBalancer {
 		this.sourceCount = 0;
 	}
 
+	@Override
 	public Server getServer(long timestamp, StreamItem item) {
 		int source = (this.sourceCount++) % this.numSources;
 		this.sourceCount %= this.numSources;

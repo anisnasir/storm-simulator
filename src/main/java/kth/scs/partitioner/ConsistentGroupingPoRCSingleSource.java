@@ -2,16 +2,8 @@ package kth.scs.partitioner;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-
 import kth.scs.hashing.Hasher;
 import kth.scs.input.QueueSet;
 import kth.scs.input.StreamItem;
@@ -83,6 +75,7 @@ public class ConsistentGroupingPoRCSingleSource implements LoadBalancer{
 		}
 	}
 	
+	@Override
 	public Server getServer(long timestamp, StreamItem item) {
 		String key = item.getTaskID().toString();
 		numMessages++;			

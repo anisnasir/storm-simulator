@@ -2,8 +2,6 @@ package kth.scs.streamitem;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 import kth.scs.input.StreamItem;

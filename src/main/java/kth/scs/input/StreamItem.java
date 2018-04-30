@@ -1,9 +1,6 @@
 package kth.scs.input;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * An atomic item in the stream. An item is composed by a timestamp and a line
@@ -16,6 +13,7 @@ public class StreamItem<T> implements Serializable{
 	private long processingTime;
 	private long finishedTime;
 	
+	@Override
 	public String toString() {
 		return taskID.toString() + " " + timestamp;
 	}
