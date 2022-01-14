@@ -1,5 +1,5 @@
 #!/bin/bash
-JAR="target/StreamLoadBalancing-0.0.5-SNAPSHOT-jar-with-dependencies.jar"
+JAR="build/libs/StreamLoadBalancing-0.0.5-SNAPSHOT-jar-with-dependencies.jar"
 indir="/Users/Anis/Datasets/"
 inFileName="wiki"
 NumberOfServers="10"
