@@ -27,6 +27,7 @@ import partitioner.PowerofTwoChoices;
 import partitioner.ShuffleGrouping;
 import server.Server;
 import server.TimeGranularity;
+import utility.InputConfig;
 
 public class Main {
     private static final double PRINT_INTERVAL = 1e6;
@@ -46,47 +47,25 @@ public class Main {
             ErrorMessage();
         }
 
-        final int simulatorType = Integer.parseInt(args[0]);
-        final String inFileName = args[1];
-        final String outDir = args[2];
-        final int numServers = Integer.parseInt(args[3]);
-        final long initialTime = Long.parseLong(args[4]);
-        int numSources = Integer.parseInt(args[5]);
-        int numReplicas = Integer.parseInt(args[6]); // consistent hashing parameter
-        double epsilon = Double.parseDouble(args[7]);
+        InputConfig config = new InputConfig(args);
+        final int simulatorType = config.getSimulatorType();
+        final String inFileName = config.getInFileName();
+        final String outDir = config.getOutDir();
+        final int numServers = config.getNumServers();
+        final long initialTime = config.getInitialTime();
+        int numSources = config.getNumSources();
+        int numReplicas = config.getNumReplicas(); // consistent hashing parameter
+        double epsilon = config.getEpsilon();
+
         long[] snapshot = new long[numServers];
         Arrays.fill(snapshot, initialTime);
 
-
-        HashMap<TimeGranularity, long[]> loadMap = new HashMap<TimeGranularity, long[]>();
-        //HashMap<TimeGranularity, ArrayList<HashSet<String>>> memoryMap = new HashMap<TimeGranularity,  ArrayList<HashSet<String>>>();
+        HashMap<TimeGranularity, long[]> loadMap = new HashMap<>();
         for (TimeGranularity tg : TimeGranularity.values()) {
             long load[] = new long[numServers];
             loadMap.put(tg, load);
-
-			/*ArrayList<HashSet<String>> list = new ArrayList<HashSet<String>>();
-			memoryMap.put(tg, list);
-			for(int i = 0 ;i <numServers;i++) {
-				HashSet<String> temp = new HashSet<String>();
-				memoryMap.get(tg).add(temp);
-			}*/
-
         }
 
-
-		/*int y = 3;
-		int z = 5;
-		int totalCapacity = 25*60*numServers;
-		double a = totalCapacity/(double)(numServers-y+y*z);
-		 */
-
-
-		/*int [] capacity = new int[numServers];
-		Arrays.fill(capacity, 1);
-		for(int i= 0; i<y;i++) {
-			capacity[i] = z;
-		}
-		 */
         int[] capacity = new int[numServers];
         Arrays.fill(capacity, 600);
 
@@ -94,7 +73,7 @@ public class Main {
         EnumMap<TimeGranularity, List<Server>> timeSeries = new EnumMap<TimeGranularity, List<Server>>(
                 TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
-            List<Server> list = new ArrayList<Server>(numServers);
+            List<Server> list = new ArrayList<>(numServers);
             for (int i = 0; i < numServers; i++) {
                 double serverCapacity = capacity[i];
                 list.add(new Server(i, initialTime, tg, 1, (int) Math.ceil(serverCapacity)));
@@ -105,7 +84,7 @@ public class Main {
 
 
         // initialize one output file per TimeGranularity
-        EnumMap<TimeGranularity, BufferedWriter> outputs = new EnumMap<TimeGranularity, BufferedWriter>(
+        EnumMap<TimeGranularity, BufferedWriter> outputs = new EnumMap<>(
                 TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
             outputs.put(tg, new BufferedWriter(new FileWriter(outDir + "_"
@@ -113,7 +92,7 @@ public class Main {
         }
 
         // initialize one LoadBalancer per TimeGranularity for simulatorTypes
-        EnumMap<TimeGranularity, LoadBalancer> hashes = new EnumMap<TimeGranularity, LoadBalancer>(
+        EnumMap<TimeGranularity, LoadBalancer> hashes = new EnumMap<>(
                 TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
             if (simulatorType == 1) {
@@ -175,45 +154,6 @@ public class Main {
                     bw.flush();
             }
 
-			/*if(itemCount == 6000000) {
-				y = 5;
-				z = 4;
-				totalCapacity = 25*60*numServers;
-				a = totalCapacity/(double)(numServers-y+y*z);
-				capacity = new int[numServers];
-				Arrays.fill(capacity, 1);
-				for(int i= 0; i<y;i++) {
-					capacity[i] = z;
-				}
-				for (TimeGranularity tg : TimeGranularity.values()) {
-					for (int i = 0; i < numServers; i++) {
-						double serverCapacity = capacity[i]*a;
-						List<Server> list = timeSeries.get(tg);
-						Server server = list.get(i);
-						server.updateCapacity((long)serverCapacity);
-					}
-				}
-			}
-			if(itemCount == 12000000) {
-				y = 2;
-				z = 10;
-				totalCapacity = 25*60*numServers;
-				a = totalCapacity/(double)(numServers-y+y*z);
-				capacity = new int[numServers];
-				Arrays.fill(capacity, 1);
-				for(int i= 0; i<y;i++) {
-					capacity[i] = z;
-				}
-				for (TimeGranularity tg : TimeGranularity.values()) {
-					for (int i = 0; i < numServers; i++) {
-						double serverCapacity = capacity[i]*a;
-						List<Server> list = timeSeries.get(tg);
-						Server server = list.get(i);
-						server.updateCapacity((long)serverCapacity);
-					}
-				}
-			}
-			 */
             for (StreamItem<String> item : items) {
                 currentTimestamp = item.getTimestamp();
                 EnumSet<TimeGranularity> statsToConsume = EnumSet
@@ -226,35 +166,7 @@ public class Main {
                     Server server = loadBalancer.getServer(currentTimestamp,
                             item);
 
-					/*if(simulatorType == 9) {
-						if(snapshot[server.getServerID()] + 60 < currentTimestamp) {
-							double resourceUtilization = server.getResourceUtilization();
-							//System.out.println(resourceUtilization);
-							if(resourceUtilization == 0.0) {
-
-							}
-							else if(resourceUtilization > 0.85) {
-								//System.out.println("reducing workload");
-								for(int i = 0 ; i< numSources;i++) {
-									ConsistentGroupingPoRC temp = (ConsistentGroupingPoRC) loadBalancer;
-									temp.reduceLoad(i, server);
-									snapshot[server.getServerID()] = currentTimestamp;
-								}
-							}
-							else if(resourceUtilization < 0.75 ) {
-								//System.out.println("increasing workload");
-								for(int i = 0 ; i< numSources;i++) {
-									ConsistentGroupingPoRC temp = (ConsistentGroupingPoRC) loadBalancer;
-									temp.increaseLoad(i, server);
-									snapshot[server.getServerID()] = currentTimestamp;
-								}
-							}
-						}
-
-					}*/
-
                     loadMap.get(entry.getKey())[server.getServerID()]++;
-                    //memoryMap.get(entry.getKey()).get(server.getServerID()).add(item.getTaskID());
 
                     boolean hasStatsReady = server.process(item.getTimestamp(), item);
 
@@ -305,18 +217,6 @@ public class Main {
             bw.write("Min Task Load:" + minTaskLoad + "\n");
             bw.write("Avg Task Load:" + average + "\n");
 
-
-			/*ArrayList<HashSet<String>> list = memoryMap.get(tg);
-			long sum = 0;
-			HashSet<String> allKeys = new HashSet<String>();
-			for(int j=0;j<list.size();j++) {
-				HashSet<String> temp  =  list.get(j);
-				sum+= temp.size();
-				allKeys.addAll(temp);
-			}
-
-			double memoryCost = sum/(double)allKeys.size();
-			bw.write("Memory Cost:" + memoryCost+"\n");*/
             bw.close();
 
         }
