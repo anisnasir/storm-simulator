@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.beust.jcommander.JCommander;
 import input.StreamItem;
 import input.StreamItemReader;
 import partitioner.ConsistentGroupingCH;
@@ -33,9 +34,7 @@ public class Main {
     private static final double PRINT_INTERVAL = 1e6;
 
     private static void ErrorMessage() {
-        String errorMessage = "Input parameters missing!!!!!!\n" +
-                "<simulatorType>\t<input-filename>\t<output-dir>\t<num-servers>\t" +
-                "<initial-time>\t<num-sources>\t<num-replicas>\t<epsilon>";
+        String errorMessage = "Input parameters missing!!!!!!\n" + "<simulatorType>\t<input-filename>\t<output-dir>\t<num-servers>\t" + "<initial-time>\t<num-sources>\t<num-replicas>\t<epsilon>";
 
         System.out.println(errorMessage);
 
@@ -47,7 +46,10 @@ public class Main {
             ErrorMessage();
         }
 
-        InputConfig config = new InputConfig(args);
+        InputConfig config = new InputConfig();
+
+        JCommander.newBuilder().addObject(config).build().parse(args);
+
         final int simulatorType = config.getSimulatorType();
         final String inFileName = config.getInFileName();
         final String outDir = config.getOutDir();
@@ -70,8 +72,7 @@ public class Main {
         Arrays.fill(capacity, 600);
 
         // initialize numServers Servers per TimeGranularity
-        EnumMap<TimeGranularity, List<Server>> timeSeries = new EnumMap<TimeGranularity, List<Server>>(
-                TimeGranularity.class);
+        EnumMap<TimeGranularity, List<Server>> timeSeries = new EnumMap<TimeGranularity, List<Server>>(TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
             List<Server> list = new ArrayList<>(numServers);
             for (int i = 0; i < numServers; i++) {
@@ -84,48 +85,36 @@ public class Main {
 
 
         // initialize one output file per TimeGranularity
-        EnumMap<TimeGranularity, BufferedWriter> outputs = new EnumMap<>(
-                TimeGranularity.class);
+        EnumMap<TimeGranularity, BufferedWriter> outputs = new EnumMap<>(TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
-            outputs.put(tg, new BufferedWriter(new FileWriter(outDir + "_"
-                    + tg.toString() + ".txt")));
+            outputs.put(tg, new BufferedWriter(new FileWriter(outDir + "_" + tg.toString() + ".txt")));
         }
 
         // initialize one LoadBalancer per TimeGranularity for simulatorTypes
-        EnumMap<TimeGranularity, LoadBalancer> hashes = new EnumMap<>(
-                TimeGranularity.class);
+        EnumMap<TimeGranularity, LoadBalancer> hashes = new EnumMap<>(TimeGranularity.class);
         for (TimeGranularity tg : TimeGranularity.values()) {
             if (simulatorType == 1) {
                 hashes.put(tg, new FieldGrouping(timeSeries.get(tg)));
             } else if (simulatorType == 2) {
-                hashes.put(tg, new ConsistentHashing(timeSeries.get(tg),
-                        numSources, numReplicas));
+                hashes.put(tg, new ConsistentHashing(timeSeries.get(tg), numSources, numReplicas));
             } else if (simulatorType == 3) {
-                hashes.put(tg, new PartialKeyGrouping(timeSeries.get(tg),
-                        numSources));
+                hashes.put(tg, new PartialKeyGrouping(timeSeries.get(tg), numSources));
             } else if (simulatorType == 4) {
                 hashes.put(tg, new ShuffleGrouping(timeSeries.get(tg)));
             } else if (simulatorType == 5) {
-                hashes.put(tg, new ConsistentGroupingKG(timeSeries.get(tg),
-                        numSources, numReplicas));
+                hashes.put(tg, new ConsistentGroupingKG(timeSeries.get(tg), numSources, numReplicas));
             } else if (simulatorType == 6) {
-                hashes.put(tg, new ConsistentGroupingPKG(timeSeries.get(tg),
-                        numSources, numReplicas));
+                hashes.put(tg, new ConsistentGroupingPKG(timeSeries.get(tg), numSources, numReplicas));
             } else if (simulatorType == 7) {
-                hashes.put(tg, new ConsistentGroupingPoTC(timeSeries.get(tg),
-                        numSources, numReplicas));
+                hashes.put(tg, new ConsistentGroupingPoTC(timeSeries.get(tg), numSources, numReplicas));
             } else if (simulatorType == 8) {
-                hashes.put(tg, new ConsistentGroupingSG(timeSeries.get(tg),
-                        numSources, numReplicas));
+                hashes.put(tg, new ConsistentGroupingSG(timeSeries.get(tg), numSources, numReplicas));
             } else if (simulatorType == 9) {
-                hashes.put(tg, new ConsistentGroupingPoRC(timeSeries.get(tg),
-                        numSources, numReplicas, epsilon));
+                hashes.put(tg, new ConsistentGroupingPoRC(timeSeries.get(tg), numSources, numReplicas, epsilon));
             } else if (simulatorType == 10) {
-                hashes.put(tg, new ConsistentGroupingCH(timeSeries.get(tg),
-                        numSources, numReplicas, epsilon));
+                hashes.put(tg, new ConsistentGroupingCH(timeSeries.get(tg), numSources, numReplicas, epsilon));
             } else if (simulatorType == 11) {
-                hashes.put(tg, new PowerofTwoChoices(timeSeries.get(tg),
-                        numSources));
+                hashes.put(tg, new PowerofTwoChoices(timeSeries.get(tg), numSources));
             }
 
 
@@ -145,10 +134,7 @@ public class Main {
         while (items != null) {
 
             if (++itemCount % PRINT_INTERVAL == 0) {
-                System.out.println("Read " + itemCount / 1000000
-                        + "M tweets.\tSimulation time: "
-                        + (System.currentTimeMillis() - simulationStartTime)
-                        / 1000 + " seconds");
+                System.out.println("Read " + itemCount / 1000000 + "M tweets.\tSimulation time: " + (System.currentTimeMillis() - simulationStartTime) / 1000 + " seconds");
                 for (BufferedWriter bw : outputs.values())
                     // flush output every PRINT_INTERVAL items
                     bw.flush();
@@ -156,28 +142,23 @@ public class Main {
 
             for (StreamItem<String> item : items) {
                 currentTimestamp = item.getTimestamp();
-                EnumSet<TimeGranularity> statsToConsume = EnumSet
-                        .noneOf(TimeGranularity.class); // empty set of time series
+                EnumSet<TimeGranularity> statsToConsume = EnumSet.noneOf(TimeGranularity.class); // empty set of time series
 
-                for (Entry<TimeGranularity, LoadBalancer> entry : hashes
-                        .entrySet()) {
+                for (Entry<TimeGranularity, LoadBalancer> entry : hashes.entrySet()) {
                     LoadBalancer loadBalancer = entry.getValue();
 
-                    Server server = loadBalancer.getServer(currentTimestamp,
-                            item);
+                    Server server = loadBalancer.getServer(currentTimestamp, item);
 
                     loadMap.get(entry.getKey())[server.getServerID()]++;
 
                     boolean hasStatsReady = server.process(item.getTimestamp(), item);
 
-                    if (hasStatsReady)
-                        statsToConsume.add(entry.getKey());
+                    if (hasStatsReady) statsToConsume.add(entry.getKey());
 
                 }
 
                 for (TimeGranularity key : statsToConsume) {
-                    printStatsToConsume(timeSeries.get(key), outputs.get(key),
-                            currentTimestamp);
+                    printStatsToConsume(timeSeries.get(key), outputs.get(key), currentTimestamp);
                 }
             }
             items = reader.nextItem();
@@ -204,10 +185,8 @@ public class Main {
             for (int i = 0; i < load.length; i++) {
                 double serverTaskLoad = load[i] / (double) (capacity[i] * tg.getNumberOfSeconds());
                 bw.write(serverTaskLoad + "\t");
-                if (maxTaskLoad < serverTaskLoad)
-                    maxTaskLoad = serverTaskLoad;
-                if (minTaskLoad > serverTaskLoad)
-                    minTaskLoad = serverTaskLoad;
+                if (maxTaskLoad < serverTaskLoad) maxTaskLoad = serverTaskLoad;
+                if (minTaskLoad > serverTaskLoad) minTaskLoad = serverTaskLoad;
                 averageTaskLoad += serverTaskLoad;
 
             }
@@ -222,8 +201,7 @@ public class Main {
         }
     }
 
-    private static void flush(Iterable<Server> series, BufferedWriter out,
-                              long timestamp) throws IOException {
+    private static void flush(Iterable<Server> series, BufferedWriter out, long timestamp) throws IOException {
         for (Server serie : series) { // sync all servers to the current
             // timestamp
             serie.synch(timestamp);
@@ -237,8 +215,7 @@ public class Main {
         } while (hasMore);
     }
 
-    private static void printStatsToConsume(Iterable<Server> servers,
-                                            BufferedWriter out, long timestamp) throws IOException {
+    private static void printStatsToConsume(Iterable<Server> servers, BufferedWriter out, long timestamp) throws IOException {
         for (Server sever : servers) { // sync all servers to the current
             // timestamp
             sever.synch(timestamp);
