@@ -153,7 +153,9 @@ public class Main {
 
                     boolean hasStatsReady = server.process(item.getTimestamp(), item);
 
-                    if (hasStatsReady) statsToConsume.add(entry.getKey());
+                    if (hasStatsReady) {
+                        statsToConsume.add(entry.getKey());
+                    }
 
                 }
 

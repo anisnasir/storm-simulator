@@ -20,6 +20,15 @@ public class InputConfig {
     @Parameter(names = "-initialTime", description = "initial timestamp for the stream")
     long initialTime;
 
+    @Parameter(names = "-numSources", description = "number of sources")
+    int numSources;
+
+    @Parameter(names = "-numReplicas", description = "consistent hashing parameter")
+    int numReplicas;
+
+    @Parameter(names = "-epsilon", description = "epsilon")
+    double epsilon;
+
     @Override
     public String toString() {
         return "InputConfig{" +
@@ -33,15 +42,6 @@ public class InputConfig {
                 ", epsilon=" + epsilon +
                 '}';
     }
-
-    @Parameter(names = "-numSources", description = "number of sources")
-    int numSources;
-
-    @Parameter(names = "-numReplicas", description = "consistent hashing parameter")
-    int numReplicas;
-
-    @Parameter(names = "-epsilon", description = "epsilon")
-    double epsilon;
 
     @Override
     public boolean equals(Object o) {

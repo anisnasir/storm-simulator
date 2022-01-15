@@ -21,7 +21,7 @@ public class Server {
 	private long currentCapacity; // remaining capacity is the number of cycles in the window (granularity)
 	private Queue<StreamItem<String>> inputQueue;
 	long unProcessed = 0;
-	private final Deque<ServerStats> timeSeries = new LinkedList<ServerStats>();
+	private final Deque<ServerStats> timeSeries = new LinkedList<>();
 	ServerStats lastStats = null;
 	int serverID;
 

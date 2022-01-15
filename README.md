@@ -12,3 +12,12 @@ Sources
 1. https://melmeric.files.wordpress.com/2014/11/the-power-of-both-choices-practical-load-balancing-for-distributed-stream-processing-engines.pdf
 2. http://arxiv.org/pdf/1510.05714v2.pdf
 3. http://arxiv.org/pdf/1510.07623v1.pdf
+
+---------
+Running
+---------
+
+The code contains the run-simulation.sh scripts to execute the code. 
+The scripts requires gnu parrallel for its execution. Use 'brew install parallel' for installation.
+Moreover, the scripts generate the output in the _output_logs_ directory
+
